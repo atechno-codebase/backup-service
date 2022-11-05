@@ -1,26 +1,24 @@
 package main
 
 import (
+	"ates/services/backup/config"
 	"ates/services/backup/handlers"
+	backupsvc "ates/services/backup/service"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strings"
 
 	"github.com/the-kaustubh/dynpkg/logger"
-	"github.com/tidwall/gjson"
 )
 
 var PORT string
 
 func init() {
-	content, err := ioutil.ReadFile("backupConfig.json")
-	if err != nil {
-		panic(err)
-	}
-	svcConf := gjson.ParseBytes(content)
-	logger.InitDefaultLogger("backup-service", svcConf)
-	PORT = svcConf.Get("port").String()
+	config.Init()
+	backupsvc.Init()
+	fmt.Println(config.Get("@this"))
+	logger.InitDefaultLogger("backup-service", config.Get("@this"))
+	PORT = config.Get("port").String()
 }
 
 func main() {
