@@ -8,14 +8,14 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/the-kaustubh/dynpkg/logger"
+	"github.com/sirupsen/logrus"
 )
 
 var backupDir string
 
 func Init() {
-	bDir := config.Get("backupDir").String()
-	fmt.Println("backupDir from config: ", bDir)
+	bDir := config.Configutaion.BackupDir
+	logrus.Info("backupDir from config: ", bDir)
 	if len(bDir) == 0 {
 		bDir = "backup"
 	}
@@ -27,11 +27,11 @@ func GetBackupDir() string {
 }
 
 func CreateBackup() {
-	uname, pwd := config.GetDBCreds()
+	uname, pwd := config.Configutaion.DbUserName, config.Configutaion.DbPassword
 	dt := time.Now().Format("20060102150405")
 	fileName, err := filepath.Abs(fmt.Sprintf("%s/%s-%s.gz", backupDir, "backup", dt))
 	if err != nil {
-		logger.LogError(err)
+		logrus.Error(err)
 		return
 	}
 
@@ -55,9 +55,9 @@ func CreateBackup() {
 	bkpCmd.Dir = backupDir
 	err = bkpCmd.Run()
 	if err != nil {
-		logger.LogError(err)
+		logrus.Error(err)
 
 	}
-	logger.LogError("stderr: ", oErr.String())
-	logger.LogError("stdout: ", oStd.String())
+	logrus.Error("stderr: ", oErr.String())
+	logrus.Error("stdout: ", oStd.String())
 }

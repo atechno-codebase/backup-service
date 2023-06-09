@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/the-kaustubh/dynpkg/logger"
+	"github.com/sirupsen/logrus"
 )
 
 var PORT string
@@ -16,9 +16,8 @@ var PORT string
 func init() {
 	config.Init()
 	backupsvc.Init()
-	fmt.Println(config.Get("@this"))
-	logger.InitDefaultLogger("backup-service", config.Get("@this"))
-	PORT = config.Get("port").String()
+	logrus.Info(config.Configutaion)
+	PORT = config.Configutaion.Port
 }
 
 func main() {
@@ -38,6 +37,6 @@ func main() {
 		}
 		handlers.DownloadBackup(w, r)
 	})
-	logger.LogError(fmt.Sprintf(`Backup service started on port: "%s"`, PORT))
-	logger.LogFatal(http.ListenAndServe(PORT, nil))
+	logrus.Error(fmt.Sprintf(`Backup service started on port: "%s"`, PORT))
+	logrus.Error(http.ListenAndServe(PORT, nil))
 }

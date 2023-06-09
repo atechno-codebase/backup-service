@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/the-kaustubh/dynpkg/logger"
+	"github.com/sirupsen/logrus"
 )
 
 func DeleteBackup(w http.ResponseWriter, r *http.Request) {
@@ -22,7 +22,7 @@ func DeleteBackup(w http.ResponseWriter, r *http.Request) {
 	filePath := fmt.Sprintf("%s/%s", backupsvc.GetBackupDir(), fileName)
 	err := os.Remove(filePath)
 	if err != nil {
-		logger.LogError(err)
+		logrus.Error(err)
 		fmt.Fprintf(w, `{"error": "%s"}`, err.Error())
 		return
 	}
@@ -31,7 +31,7 @@ func DeleteBackup(w http.ResponseWriter, r *http.Request) {
 
 func CreateBackup(w http.ResponseWriter, r *http.Request) {
 	now := time.Now()
-	logger.LogInfo(fmt.Sprintf("backup started: %s", now))
+	logrus.Info(fmt.Sprintf("backup started: %s", now))
 	go backupsvc.CreateBackup()
 	fmt.Fprintf(w, `{"error": "backup started: %s"}`, now)
 	return
@@ -40,7 +40,7 @@ func CreateBackup(w http.ResponseWriter, r *http.Request) {
 func ListAll(w http.ResponseWriter, r *http.Request) {
 	entries, err := os.ReadDir(backupsvc.GetBackupDir())
 	if err != nil {
-		logger.LogError(err)
+		logrus.Error(err)
 		fmt.Fprintf(w, `{"error": "%s"}`, err.Error())
 		return
 	}
@@ -52,7 +52,7 @@ func ListAll(w http.ResponseWriter, r *http.Request) {
 
 	jsonArray, err := json.Marshal(backupsList)
 	if err != nil {
-		logger.LogError(err)
+		logrus.Error(err)
 		fmt.Fprintf(w, `{"error": "%s"}`, err.Error())
 		return
 	}

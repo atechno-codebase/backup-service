@@ -1,28 +1,18 @@
 package config
 
 import (
-	"io/ioutil"
-
-	"github.com/tidwall/gjson"
+	"github.com/AbsaOSS/env-binder/env"
 )
 
-var configuration gjson.Result
+var Configutaion Config
+
+type Config struct {
+	Port       string `env:"PORT"`
+	BackupDir  string `env:"BACKUP_DIR"`
+	DbUserName string `env:"DB_USERNAME"`
+	DbPassword string `env:"DB_PASSWORD"`
+}
 
 func Init() {
-	content, err := ioutil.ReadFile("config.json")
-	if err != nil {
-		panic(err)
-	}
-	configuration = gjson.ParseBytes(content).Get("backup")
-}
-
-func GetDBCreds() (string, string) {
-	uname := configuration.Get("db.username").String()
-	pwd := configuration.Get("db.password").String()
-
-	return uname, pwd
-}
-
-func Get(key string) gjson.Result {
-	return configuration.Get(key)
+	env.Bind(&Configutaion)
 }
